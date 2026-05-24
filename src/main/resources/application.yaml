@@ -1,0 +1,194 @@
+spring:
+  application:
+    name: wik-history-feed
+
+  # Active Profile
+  profiles:wikpassword
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wik_history}
+    username: ${DB_USERNAME:wikuser}
+    password: ${DB_PASSWORD:wikpassword}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Use validate with Flyway/Liquibase
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # Email Configuration
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-here-must-be-at-least-256-bits-long}
+  expiration: 86400000  # 24 hours in milliseconds
+  refresh-token:
+    expiration: 604800000  # 7 days in milliseconds
+
+# Wikipedia API Configuration
+wikipedia:
+  api:
+    base-url: https://en.wikipedia.org/w/api.php
+    user-agent: WikHistoryFeed/1.0
+    timeout: 10000
+    max-retries: 3
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.doomscroll.wik: ${LOG_LEVEL:DEBUG}
+    org.springframework.security: INFO
+    org.hibernate.SQL: ${HIBERNATE_LOG_LEVEL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${HIBERNATE_LOG_LEVEL:WARN}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 30
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  health:
+    redis:
+      enabled: true
+    mail:
+      enabled: false
+
+# SpringDoc Configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  api-docs:
+    path: /api-docs
+  packages-to-scan: com.doomscroll.wik.controller
+
+# Application specific configuration
+app:
+  security:
+    max-login-attempts: 5
+    account-lock-duration-minutes: 30
+    password-reset-token-expiration-minutes: 60
+  feed:
+    page-size: 20
+    max-cache-age-hours: 24
+    popular-events-threshold: 100
+  comments:
+    max-nesting-level: 3
+    max-length: 1000
+  content:
+    max-summary-length: 500
+    image-cache-days: 7
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update  # Only in development!
+logging:
+  level:
+    com.doomscroll.wik: DEBUG
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+server:
+  port: ${SERVER_PORT:8080}
+logging:
+  level:
+    root: WARN
+    com.doomscroll.wik: INFO
