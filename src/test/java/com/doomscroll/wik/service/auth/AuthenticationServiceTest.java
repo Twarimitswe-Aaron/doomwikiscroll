@@ -4,6 +4,7 @@ import com.doomscroll.wik.dto.request.auth.LoginRequest;
 import com.doomscroll.wik.dto.request.auth.RegisterRequest;
 import com.doomscroll.wik.dto.response.auth.AuthenticationResponse;
 import com.doomscroll.wik.entity.User;
+import com.doomscroll.wik.entity.VerificationToken;
 import com.doomscroll.wik.entity.enums.UserRole;
 import com.doomscroll.wik.entity.enums.UserStatus;
 import com.doomscroll.wik.repository.UserRepository;
@@ -37,6 +38,12 @@ class AuthenticationServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private VerificationTokenService verificationTokenService;
+
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -76,6 +83,14 @@ class AuthenticationServiceTest {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
+
+        VerificationToken vt = VerificationToken.builder()
+                .token("verificationToken")
+                .tokenType("EMAIL_VERIFICATION")
+                .user(user)
+                .build();
+        when(verificationTokenService.createEmailVerificationToken(any(User.class))).thenReturn(vt);
+
         when(jwtService.generateAccessToken(any(User.class))).thenReturn("accessToken");
         when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refreshToken");
 
