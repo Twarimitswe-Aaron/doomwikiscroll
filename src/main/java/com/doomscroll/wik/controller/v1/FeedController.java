@@ -1,4 +1,38 @@
 package com.doomscroll.wik.controller.v1;
 
+import com.doomscroll.wik.dto.response.FeedResponseDto;
+import com.doomscroll.wik.dto.request.InteractionRequest;
+import com.doomscroll.wik.service.FeedService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/v1/feed")
+@RequiredArgsConstructor
+@Tag(name = "Feed", description = "Endpoints for the main content feed")
 public class FeedController {
+
+    private final FeedService feedService;
+
+    @GetMapping
+    @Operation(summary = "Get historical events feed")
+    public ResponseEntity<FeedResponseDto> getFeed(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(feedService.getFeed(page, size));
+    }
+
+    @PostMapping("/interact")
+    @Operation(summary = "Record user interaction with an event")
+    public ResponseEntity<Map<String, String>> recordInteraction(
+            @Valid @RequestBody InteractionRequest request) {
+        // Interaction logic to be implemented
+        return ResponseEntity.ok(Map.of("message", "Interaction recorded"));
+    }
 }
