@@ -1,4 +1,4 @@
-package com.doomscroll.wik.service;
+package com.doomscroll.wik.service.event;
 
 import com.doomscroll.wik.dto.EventDto;
 import com.doomscroll.wik.entity.HistoricalEvent;

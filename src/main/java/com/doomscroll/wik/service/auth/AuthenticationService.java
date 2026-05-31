@@ -66,7 +66,7 @@ public class AuthenticationService {
 
         // Send verification email asynchronously
         String verificationLink = baseUrl + "/verify-email?token=" + verificationToken.getToken();
-        emailService.sendVerificationEmail(user.getEmail(), user.getUsername(), verificationLink);
+        emailService.sendVerificationEmail(user.getEmail(), user.getDisplayUsername(), verificationLink);
 
         // Generate tokens
         String accessToken = jwtService.generateAccessToken(user);
@@ -76,7 +76,7 @@ public class AuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getId())
-                .username(user.getUsername())
+                .username(user.getDisplayUsername())
                 .email(user.getEmail())
                 .build();
     }
@@ -99,7 +99,7 @@ public class AuthenticationService {
         verificationTokenService.markTokenAsUsed(vt);
 
         // Send welcome email
-        emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+        emailService.sendWelcomeEmail(user.getEmail(), user.getDisplayUsername());
 
         log.info("Email verified for user: {}", user.getEmail());
     }
@@ -112,7 +112,7 @@ public class AuthenticationService {
         VerificationToken token = verificationTokenService.createPasswordResetToken(user);
 
         String resetLink = baseUrl + "/reset-password?token=" + token.getToken();
-        emailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), resetLink);
+        emailService.sendPasswordResetEmail(user.getEmail(), user.getDisplayUsername(), resetLink);
 
         log.info("Password reset email sent to: {}", email);
     }
@@ -177,7 +177,7 @@ public class AuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getId())
-                .username(user.getUsername())
+                .username(user.getDisplayUsername())
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .emailVerified(user.getEmailVerified())
@@ -206,7 +206,7 @@ public class AuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(newRefreshToken)
                 .userId(user.getId())
-                .username(user.getUsername())
+                .username(user.getDisplayUsername())
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .build();

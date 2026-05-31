@@ -2,12 +2,15 @@ package com.doomscroll.wik.controller.v1;
 
 import com.doomscroll.wik.dto.response.FeedResponseDto;
 import com.doomscroll.wik.dto.request.InteractionRequest;
-import com.doomscroll.wik.service.FeedService;
+import com.doomscroll.wik.entity.User;
+import com.doomscroll.wik.service.social.FeedService;
+import com.doomscroll.wik.service.social.SocialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,6 +22,7 @@ import java.util.Map;
 public class FeedController {
 
     private final FeedService feedService;
+    private final SocialService socialService;
 
     @GetMapping
     @Operation(summary = "Get historical events feed")
@@ -31,8 +35,9 @@ public class FeedController {
     @PostMapping("/interact")
     @Operation(summary = "Record user interaction with an event")
     public ResponseEntity<Map<String, String>> recordInteraction(
-            @Valid @RequestBody InteractionRequest request) {
-        // Interaction logic to be implemented
+            @Valid @RequestBody InteractionRequest request,
+            @AuthenticationPrincipal User user) {
+        socialService.recordInteraction(user != null ? user.getId() : null, request);
         return ResponseEntity.ok(Map.of("message", "Interaction recorded"));
     }
 }

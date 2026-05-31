@@ -1,7 +1,7 @@
 package com.doomscroll.wik.controller.v1;
 
 import com.doomscroll.wik.dto.EventDto;
-import com.doomscroll.wik.service.EventService;
+import com.doomscroll.wik.service.event.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

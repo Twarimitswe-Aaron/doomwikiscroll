@@ -118,6 +118,10 @@ public class User extends BaseEntity implements UserDetails {
         return this.passwordHash;
     }
 
+    public String getDisplayUsername() {
+        return this.username;
+    }
+
     @Override
     public String getUsername() {
         return this.email;

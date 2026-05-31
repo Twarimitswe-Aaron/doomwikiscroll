@@ -1,4 +1,4 @@
-package com.doomscroll.wik.service;
+package com.doomscroll.wik.service.social;
 
 import com.doomscroll.wik.dto.response.FeedResponseDto;
 import com.doomscroll.wik.dto.EventDto;
