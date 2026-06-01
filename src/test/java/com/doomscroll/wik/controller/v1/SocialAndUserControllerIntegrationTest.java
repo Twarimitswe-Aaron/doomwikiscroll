@@ -276,9 +276,9 @@ class SocialAndUserControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/admin/users/" + testUser.getId() + "/status")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("status", "locked"))))
+                        .content(objectMapper.writeValueAsString(Map.of("status", "suspended"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User status updated to locked"));
+                .andExpect(jsonPath("$.message").value("User status updated to suspended"));
 
         // Delete event
         mockMvc.perform(delete("/api/v1/admin/events/" + eventId)

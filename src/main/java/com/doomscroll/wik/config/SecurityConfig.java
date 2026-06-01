@@ -47,6 +47,22 @@ public class SecurityConfig {
                         .requestMatchers("/graphiql/**").permitAll()
                         .requestMatchers("/graphql").permitAll()
 
+                        // Public read-only content endpoints (no auth needed)
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.GET,
+                                "/api/v1/categories",
+                                "/api/v1/categories/**",
+                                "/api/v1/events",
+                                "/api/v1/events/**",
+                                "/api/v1/comments/event/**",
+                                "/api/v1/comments/*/replies"
+                        ).permitAll()
+                        // Feed interaction is semi-public (works anon, enriched when authed)
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/v1/feed/interact"
+                        ).permitAll()
+
                         // Admin endpoints
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
