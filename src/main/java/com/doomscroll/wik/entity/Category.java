@@ -36,9 +36,11 @@ public class Category extends BaseEntity {
     @Builder.Default
     private Set<Category> subCategories = new HashSet<>();
 
+    @Builder.Default
     @Column(name = "display_order")
     private Integer displayOrder = 0;
 
+    @Builder.Default
     @Column(name = "is_active")
     private Boolean isActive = true;
 

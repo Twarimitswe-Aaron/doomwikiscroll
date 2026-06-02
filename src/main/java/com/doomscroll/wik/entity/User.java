@@ -48,15 +48,19 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "profile_picture_url", length = 500)
     private String profilePictureUrl;
 
+    @Builder.Default
     @Column(name = "email_verified")
     private Boolean emailVerified = false;
 
+    @Builder.Default
     @Column(name = "two_factor_enabled")
     private Boolean twoFactorEnabled = false;
 
+    @Builder.Default
     @Column(name = "account_locked")
     private Boolean accountLocked = false;
 
+    @Builder.Default
     @Column(name = "login_attempts")
     private Integer loginAttempts = 0;
 
@@ -66,10 +70,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "last_login_ip", length = 45)
     private String lastLoginIp;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private UserRole role = UserRole.USER;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private UserStatus status = UserStatus.ACTIVE;

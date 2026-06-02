@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "verification_tokens")
 @Data
 @Builder
+@lombok.EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerificationToken extends BaseEntity {
@@ -29,6 +30,7 @@ public class VerificationToken extends BaseEntity {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean used = false;
 }
