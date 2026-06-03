@@ -1,5 +1,6 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- Create base tables for the social history platform
 
@@ -77,7 +78,6 @@ CREATE TABLE event_categories (
 CREATE TABLE related_events (
                                 event_id UUID REFERENCES historical_events(id) ON DELETE CASCADE,
                                 related_event_id UUID REFERENCES historical_events(id) ON DELETE CASCADE,
-                                relationship_type VARCHAR(50),
                                 PRIMARY KEY (event_id, related_event_id)
 );
 
@@ -102,6 +102,7 @@ CREATE TABLE user_reactions (
                                 event_id UUID NOT NULL REFERENCES historical_events(id),
                                 reaction_type VARCHAR(20) NOT NULL, -- LIKE, LOVE, WOW, SAD, ANGRY, INTERESTING
                                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                 UNIQUE(user_id, event_id, reaction_type)
 );
 
@@ -112,6 +113,7 @@ CREATE TABLE bookmarks (
                            event_id UUID NOT NULL REFERENCES historical_events(id),
                            notes TEXT,
                            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                           updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                            UNIQUE(user_id, event_id)
 );
 
@@ -124,7 +126,8 @@ CREATE TABLE reading_history (
                                  time_spent_seconds INTEGER DEFAULT 0,
                                  completed BOOLEAN DEFAULT FALSE,
                                  last_read_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- User Follows (Topics/Categories)
@@ -133,30 +136,8 @@ CREATE TABLE user_follows (
                               user_id UUID NOT NULL REFERENCES users(id),
                               category_id UUID NOT NULL REFERENCES categories(id),
                               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                              updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                               UNIQUE(user_id, category_id)
-);
-
--- Notifications table
-CREATE TABLE notifications (
-                               id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                               user_id UUID NOT NULL REFERENCES users(id),
-                               type VARCHAR(50) NOT NULL,
-                               title VARCHAR(255) NOT NULL,
-                               message TEXT,
-                               reference_id UUID,
-                               reference_type VARCHAR(50),
-                               is_read BOOLEAN DEFAULT FALSE,
-                               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Refresh Tokens table
-CREATE TABLE refresh_tokens (
-                                id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                                user_id UUID NOT NULL REFERENCES users(id),
-                                token VARCHAR(500) NOT NULL UNIQUE,
-                                expires_at TIMESTAMP NOT NULL,
-                                revoked BOOLEAN DEFAULT FALSE,
-                                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Email Verification Tokens
@@ -167,20 +148,8 @@ CREATE TABLE verification_tokens (
                                      token_type VARCHAR(50) NOT NULL, -- EMAIL_VERIFICATION, PASSWORD_RESET, TWO_FACTOR
                                      expires_at TIMESTAMP NOT NULL,
                                      used BOOLEAN DEFAULT FALSE,
-                                     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Device Sessions table
-CREATE TABLE device_sessions (
-                                 id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                                 user_id UUID NOT NULL REFERENCES users(id),
-                                 device_id VARCHAR(255),
-                                 device_type VARCHAR(50),
-                                 device_name VARCHAR(255),
-                                 ip_address VARCHAR(45),
-                                 user_agent TEXT,
-                                 last_active_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes for better performance
@@ -195,8 +164,6 @@ CREATE INDEX idx_comments_user_id ON comments(user_id);
 CREATE INDEX idx_comments_parent_id ON comments(parent_comment_id);
 CREATE INDEX idx_bookmarks_user_id ON bookmarks(user_id);
 CREATE INDEX idx_reading_history_user_id ON reading_history(user_id);
-CREATE INDEX idx_notifications_user_id ON notifications(user_id) WHERE is_read = FALSE;
-CREATE INDEX idx_refresh_tokens_token ON refresh_tokens(token);
 CREATE INDEX idx_verification_tokens_token ON verification_tokens(token);
 
 -- Create text search indexes
