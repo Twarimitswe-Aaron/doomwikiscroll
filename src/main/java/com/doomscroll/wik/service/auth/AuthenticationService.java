@@ -64,9 +64,9 @@ public class AuthenticationService {
         // Create verification token
         VerificationToken verificationToken = verificationTokenService.createEmailVerificationToken(user);
 
-        // Send verification email asynchronously
+        // Queue verification email for scheduled delivery/retry.
         String verificationLink = baseUrl + "/verify-email?token=" + verificationToken.getToken();
-        emailService.sendVerificationEmail(user.getEmail(), user.getDisplayUsername(), verificationLink);
+        emailService.queueVerificationEmail(user, verificationLink);
 
         // Generate tokens
         String accessToken = jwtService.generateAccessToken(user);
@@ -98,8 +98,7 @@ public class AuthenticationService {
 
         verificationTokenService.markTokenAsUsed(vt);
 
-        // Send welcome email
-        emailService.sendWelcomeEmail(user.getEmail(), user.getDisplayUsername());
+        emailService.queueWelcomeEmail(user);
 
         log.info("Email verified for user: {}", user.getEmail());
     }
@@ -112,9 +111,25 @@ public class AuthenticationService {
         VerificationToken token = verificationTokenService.createPasswordResetToken(user);
 
         String resetLink = baseUrl + "/reset-password?token=" + token.getToken();
-        emailService.sendPasswordResetEmail(user.getEmail(), user.getDisplayUsername(), resetLink);
+        emailService.queuePasswordResetEmail(user, resetLink);
 
         log.info("Password reset email sent to: {}", email);
+    }
+
+    @Transactional
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("No account found with this email"));
+
+        if (Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw new RuntimeException("Email is already verified");
+        }
+
+        VerificationToken verificationToken = verificationTokenService.createEmailVerificationToken(user);
+        String verificationLink = baseUrl + "/verify-email?token=" + verificationToken.getToken();
+        emailService.queueVerificationEmail(user, verificationLink);
+
+        log.info("Verification email re-queued for user: {}", user.getEmail());
     }
 
     @Transactional

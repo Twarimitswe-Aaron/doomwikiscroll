@@ -161,6 +161,25 @@ CREATE TABLE verification_tokens (
                                      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Email delivery outbox
+CREATE TABLE email_outbox (
+                              id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                              user_id UUID REFERENCES users(id),
+                              email_type VARCHAR(50) NOT NULL,
+                              recipient_email VARCHAR(255) NOT NULL,
+                              subject VARCHAR(255) NOT NULL,
+                              template_name VARCHAR(100) NOT NULL,
+                              template_variables TEXT NOT NULL,
+                              status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+                              attempts INTEGER NOT NULL DEFAULT 0,
+                              max_attempts INTEGER NOT NULL DEFAULT 5,
+                              next_attempt_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                              sent_at TIMESTAMP,
+                              last_error TEXT,
+                              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                              updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
@@ -189,6 +208,8 @@ CREATE INDEX idx_user_follows_category_id ON user_follows(category_id);
 CREATE INDEX idx_verification_tokens_token_type ON verification_tokens(token, token_type);
 CREATE INDEX idx_verification_tokens_user_type_active ON verification_tokens(user_id, token_type) WHERE used = FALSE;
 CREATE INDEX idx_verification_tokens_expires_at ON verification_tokens(expires_at);
+CREATE INDEX idx_email_outbox_status_next_attempt ON email_outbox(status, next_attempt_at);
+CREATE INDEX idx_email_outbox_user_type ON email_outbox(user_id, email_type);
 
 -- Create text search indexes
 CREATE INDEX idx_historical_events_title_trgm ON historical_events USING gin (lower(title) gin_trgm_ops);

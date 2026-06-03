@@ -45,6 +45,14 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
     }
 
+    @PostMapping("/resend-verification-email")
+    @Operation(summary = "Resend email verification link")
+    public ResponseEntity<Map<String, String>> resendVerificationEmail(
+            @Valid @RequestBody ResendVerificationEmailRequest request) {
+        authenticationService.resendVerificationEmail(request.getEmail());
+        return ResponseEntity.ok(Map.of("message", "Verification email has been queued"));
+    }
+
     @PostMapping("/forgot-password")
     @Operation(summary = "Request password reset")
     public ResponseEntity<Map<String, String>> forgotPassword(

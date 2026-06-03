@@ -1,6 +1,7 @@
 package com.doomscroll.wik.config;
 
 import com.doomscroll.wik.repository.VerificationTokenRepository;
+import com.doomscroll.wik.service.auth.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduledTasks {
 
     private final VerificationTokenRepository tokenRepository;
+    private final EmailService emailService;
+
+    @Scheduled(fixedDelayString = "${app.email.outbox.poll-interval-ms:60000}")
+    public void processEmailOutbox() {
+        log.debug("Processing email outbox");
+        emailService.processDueEmails();
+    }
 
     @Scheduled(cron = "0 0 2 * * ?") // Run at 2 AM every day
     @Transactional

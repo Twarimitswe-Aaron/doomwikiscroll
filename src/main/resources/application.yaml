@@ -135,6 +135,11 @@ app:
     max-login-attempts: 5
     account-lock-duration-minutes: 30
     password-reset-token-expiration-minutes: 60
+  email:
+    outbox:
+      poll-interval-ms: 60000
+      retry-delay-seconds: 60
+      batch-size: 25
   feed:
     page-size: 20
     max-cache-age-hours: 24
