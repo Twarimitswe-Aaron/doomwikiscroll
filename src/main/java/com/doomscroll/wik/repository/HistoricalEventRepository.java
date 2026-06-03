@@ -19,6 +19,9 @@ public interface HistoricalEventRepository extends JpaRepository<HistoricalEvent
     @Query("SELECT e FROM HistoricalEvent e JOIN e.categories c WHERE c.id = :categoryId")
     Page<HistoricalEvent> findByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
-    @Query(value = "SELECT * FROM historical_events ORDER BY RANDOM()", nativeQuery = true)
-    Page<HistoricalEvent> findRandomEvents(Pageable pageable);
+    @Query("SELECT e FROM HistoricalEvent e WHERE e.status = 'PUBLISHED' AND e.randomKey >= :seed ORDER BY e.randomKey ASC")
+    Page<HistoricalEvent> findPublishedEventsAfterRandomKey(@Param("seed") double seed, Pageable pageable);
+
+    @Query("SELECT e FROM HistoricalEvent e WHERE e.status = 'PUBLISHED' AND e.randomKey < :seed ORDER BY e.randomKey ASC")
+    Page<HistoricalEvent> findPublishedEventsBeforeRandomKey(@Param("seed") double seed, Pageable pageable);
 }

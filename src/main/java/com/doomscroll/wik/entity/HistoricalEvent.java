@@ -9,6 +9,7 @@ import lombok.Builder;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Table(name = "historical_events")
@@ -87,6 +88,10 @@ public class HistoricalEvent extends BaseEntity {
     @Builder.Default
     private String status = "PUBLISHED";
 
+    @Column(name = "random_key", nullable = false)
+    @Builder.Default
+    private Double randomKey = ThreadLocalRandom.current().nextDouble();
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "event_categories",
@@ -104,4 +109,11 @@ public class HistoricalEvent extends BaseEntity {
     )
     @Builder.Default
     private Set<HistoricalEvent> relatedEvents = new HashSet<>();
+
+    @PrePersist
+    void assignRandomKey() {
+        if (randomKey == null) {
+            randomKey = ThreadLocalRandom.current().nextDouble();
+        }
+    }
 }

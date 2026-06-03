@@ -63,6 +63,14 @@ CREATE TABLE historical_events (
                                    is_trending BOOLEAN DEFAULT FALSE,
                                    is_featured BOOLEAN DEFAULT FALSE,
                                    status VARCHAR(20) NOT NULL DEFAULT 'PUBLISHED',
+                                   random_key DOUBLE PRECISION NOT NULL DEFAULT random(),
+                                   search_vector tsvector GENERATED ALWAYS AS (
+                                       setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+                                       setweight(to_tsvector('english', coalesce(summary, '')), 'B') ||
+                                       setweight(to_tsvector('english', coalesce(detailed_content, '')), 'C') ||
+                                       setweight(to_tsvector('english', coalesce(location, '')), 'D') ||
+                                       setweight(to_tsvector('english', coalesce(era, '')), 'D')
+                                   ) STORED,
                                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -127,7 +135,8 @@ CREATE TABLE reading_history (
                                  completed BOOLEAN DEFAULT FALSE,
                                  last_read_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                 UNIQUE(user_id, event_id)
 );
 
 -- User Follows (Topics/Categories)
@@ -155,17 +164,33 @@ CREATE TABLE verification_tokens (
 -- Create indexes for better performance
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_historical_events_title ON historical_events(title);
-CREATE INDEX idx_historical_events_year ON historical_events(event_year);
-CREATE INDEX idx_historical_events_status ON historical_events(status);
+CREATE INDEX idx_categories_active_display_order ON categories(is_active, display_order);
+CREATE INDEX idx_categories_parent_id ON categories(parent_category_id);
+CREATE INDEX idx_historical_events_year ON historical_events(event_year) WHERE status = 'PUBLISHED';
+CREATE INDEX idx_historical_events_era ON historical_events(era) WHERE status = 'PUBLISHED';
+CREATE INDEX idx_historical_events_status_created ON historical_events(status, created_at DESC);
+CREATE INDEX idx_historical_events_status_random_key ON historical_events(status, random_key);
+CREATE INDEX idx_historical_events_featured_created ON historical_events(is_featured, created_at DESC) WHERE is_featured = TRUE;
 CREATE INDEX idx_historical_events_trending ON historical_events(is_trending) WHERE is_trending = TRUE;
+CREATE INDEX idx_event_categories_category_event ON event_categories(category_id, event_id);
+CREATE INDEX idx_event_categories_event_category ON event_categories(event_id, category_id);
 CREATE INDEX idx_comments_event_id ON comments(event_id);
 CREATE INDEX idx_comments_user_id ON comments(user_id);
 CREATE INDEX idx_comments_parent_id ON comments(parent_comment_id);
-CREATE INDEX idx_bookmarks_user_id ON bookmarks(user_id);
+CREATE INDEX idx_comments_event_top_level_created ON comments(event_id, created_at DESC) WHERE parent_comment_id IS NULL AND is_deleted = FALSE;
+CREATE INDEX idx_comments_parent_created ON comments(parent_comment_id, created_at ASC) WHERE is_deleted = FALSE;
+CREATE INDEX idx_user_reactions_user_event ON user_reactions(user_id, event_id);
+CREATE INDEX idx_user_reactions_event_type ON user_reactions(event_id, reaction_type);
+CREATE INDEX idx_bookmarks_user_created ON bookmarks(user_id, created_at DESC);
+CREATE INDEX idx_bookmarks_event_id ON bookmarks(event_id);
 CREATE INDEX idx_reading_history_user_id ON reading_history(user_id);
-CREATE INDEX idx_verification_tokens_token ON verification_tokens(token);
+CREATE INDEX idx_reading_history_user_last_read ON reading_history(user_id, last_read_at DESC);
+CREATE INDEX idx_user_follows_category_id ON user_follows(category_id);
+CREATE INDEX idx_verification_tokens_token_type ON verification_tokens(token, token_type);
+CREATE INDEX idx_verification_tokens_user_type_active ON verification_tokens(user_id, token_type) WHERE used = FALSE;
+CREATE INDEX idx_verification_tokens_expires_at ON verification_tokens(expires_at);
 
 -- Create text search indexes
-CREATE INDEX idx_historical_events_title_trgm ON historical_events USING gin (title gin_trgm_ops);
-CREATE INDEX idx_historical_events_summary_trgm ON historical_events USING gin (summary gin_trgm_ops);
+CREATE INDEX idx_historical_events_title_trgm ON historical_events USING gin (lower(title) gin_trgm_ops);
+CREATE INDEX idx_historical_events_summary_trgm ON historical_events USING gin (lower(summary) gin_trgm_ops);
+CREATE INDEX idx_historical_events_search_vector ON historical_events USING gin (search_vector);

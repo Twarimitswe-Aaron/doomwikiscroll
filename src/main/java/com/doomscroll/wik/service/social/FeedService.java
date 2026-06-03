@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +26,13 @@ public class FeedService {
 
     @Transactional(readOnly = true)
     public FeedResponseDto getFeed(int page, int size) {
-        // Use random order for infinite scroll feed for now
-        Page<HistoricalEvent> eventPage = eventRepository.findRandomEvents(PageRequest.of(page, size));
+        double seed = ThreadLocalRandom.current().nextDouble();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<HistoricalEvent> eventPage = eventRepository.findPublishedEventsAfterRandomKey(seed, pageRequest);
+
+        if (eventPage.isEmpty()) {
+            eventPage = eventRepository.findPublishedEventsBeforeRandomKey(seed, pageRequest);
+        }
         
         List<EventDto> events = eventPage.getContent().stream()
                 .map(eventMapper::toDto)
