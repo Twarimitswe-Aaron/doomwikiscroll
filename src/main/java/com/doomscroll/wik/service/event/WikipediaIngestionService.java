@@ -43,11 +43,13 @@ public class WikipediaIngestionService {
         log.info("fetchRandomArticles called with limit={}", limit);
         List<EventDto> events = new ArrayList<>();
         try {
+            // Fetch 2x the requested limit so we can prefer articles with thumbnails
+            int fetchLimit = Math.min(limit * 2, 50);
             java.net.URI uri = UriComponentsBuilder.fromHttpUrl(wikipediaApiUrl)
                     .queryParam("action", "query")
                     .queryParam("generator", "random")
                     .queryParam("grnnamespace", "0")
-                    .queryParam("grnlimit", limit)
+                    .queryParam("grnlimit", fetchLimit)
                     .queryParam("prop", "extracts|pageimages")
                     .queryParam("exintro", "1")
                     .queryParam("explaintext", "1")
@@ -69,7 +71,7 @@ public class WikipediaIngestionService {
                     entity,
                     JsonNode.class
             );
-            
+
             log.info("Wikipedia API response status code: {}", responseEntity.getStatusCode());
             JsonNode response = responseEntity.getBody();
             log.debug("Wikipedia API response body: {}", response);
@@ -77,29 +79,54 @@ public class WikipediaIngestionService {
             if (response != null && response.has("query") && response.get("query").has("pages")) {
                 JsonNode pages = response.get("query").get("pages");
                 log.info("Found {} pages in Wikipedia response", pages.size());
+
+                List<EventDto> withImage = new ArrayList<>();
+                List<EventDto> withoutImage = new ArrayList<>();
+
                 pages.fields().forEachRemaining(entry -> {
                     JsonNode page = entry.getValue();
                     try {
                         EventDto event = mapToEventDto(page);
                         if (event != null) {
                             event.setId(UUID.randomUUID());
-                            redisTemplate.opsForValue().set("temp_event:" + event.getId(), event, 24, TimeUnit.HOURS);
-                            events.add(event);
-                            log.info("Successfully mapped and cached Wikipedia article: {}", event.getTitle());
+                            if (event.getThumbnailUrl() != null) {
+                                withImage.add(event);
+                            } else {
+                                withoutImage.add(event);
+                            }
+                            log.info("Mapped Wikipedia article: {} (hasImage={})", event.getTitle(), event.getThumbnailUrl() != null);
                         } else {
-                            log.warn("Skipped page ID: {} (null mapped EventDto, possibly missing extract)", entry.getKey());
+                            log.warn("Skipped page ID: {} (null mapped EventDto)", entry.getKey());
                         }
                     } catch (Exception e) {
                         log.warn("Failed to map Wikipedia page ID: {}", entry.getKey(), e);
                     }
                 });
+
+                // Prioritise image-bearing articles; fill remaining slots with text-only
+                List<EventDto> selected = new ArrayList<>();
+                selected.addAll(withImage);
+                if (selected.size() < limit) {
+                    int remaining = limit - selected.size();
+                    selected.addAll(withoutImage.subList(0, Math.min(remaining, withoutImage.size())));
+                }
+                if (selected.size() > limit) {
+                    selected = selected.subList(0, limit);
+                }
+
+                // Cache all selected events in Redis
+                for (EventDto event : selected) {
+                    redisTemplate.opsForValue().set("temp_event:" + event.getId(), event, 24, TimeUnit.HOURS);
+                }
+                events.addAll(selected);
+
             } else {
                 log.warn("Wikipedia response did not contain query.pages: {}", response);
             }
         } catch (Exception e) {
             log.error("Failed to fetch articles from Wikipedia", e);
         }
-        log.info("Returning {} events from fetchRandomArticles", events.size());
+        log.info("Returning {} events from fetchRandomArticles ({} requested)", events.size(), limit);
         return events;
     }
 
