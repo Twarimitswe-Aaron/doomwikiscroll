@@ -1,8 +1,7 @@
 package com.doomscroll.wik.service.auth;
 
-import com.doomscroll.wik.entity.EmailOutbox;
+import com.doomscroll.wik.dto.RedisEmailOutbox;
 import com.doomscroll.wik.entity.User;
-import com.doomscroll.wik.repository.EmailOutboxRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
-    private final EmailOutboxRepository emailOutboxRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
     @Value("${spring.mail.username}")
@@ -110,39 +111,68 @@ public class EmailService {
 
     @Transactional
     public void processDueEmails() {
-        var dueEmails = emailOutboxRepository.findDueEmails(LocalDateTime.now(), PageRequest.of(0, batchSize));
-        for (EmailOutbox email : dueEmails) {
-            processEmail(email);
+        long nowMillis = LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        
+        // Fetch IDs that are due (score <= nowMillis) up to batchSize limit
+        Set<Object> dueIds = redisTemplate.opsForZSet().rangeByScore("emails:pending", 0, nowMillis, 0, batchSize);
+        if (dueIds == null || dueIds.isEmpty()) return;
+
+        for (Object idObj : dueIds) {
+            String id = (String) idObj;
+            RedisEmailOutbox email = (RedisEmailOutbox) redisTemplate.opsForHash().get("emails:all", id);
+            if (email != null) {
+                processEmail(email);
+            } else {
+                // If not found in hash, clean it up from the ZSET
+                redisTemplate.opsForZSet().remove("emails:pending", id);
+            }
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void processEmail(EmailOutbox email) {
-        email.setStatus("SENDING");
+    public void processEmail(RedisEmailOutbox email) {
+        String id = email.getId();
         email.setAttempts(email.getAttempts() + 1);
-        emailOutboxRepository.saveAndFlush(email);
 
         try {
             sendEmail(email);
             email.setStatus("SENT");
             email.setSentAt(LocalDateTime.now());
             email.setLastError(null);
+            
+            // Remove from pending queue since it's successfully sent
+            redisTemplate.opsForZSet().remove("emails:pending", id);
+            // Delete from all hash to keep Redis clean
+            redisTemplate.opsForHash().delete("emails:all", id);
+            
             log.info("Email {} sent to {}", email.getEmailType(), email.getRecipientEmail());
         } catch (Exception e) {
-            email.setLastError(ExceptionUtils.getRootCauseMessage(e));
+            String errorMsg = ExceptionUtils.getRootCauseMessage(e);
+            email.setLastError(errorMsg);
+            
             if (email.getAttempts() >= email.getMaxAttempts()) {
                 email.setStatus("DEAD");
+                // Remove from pending queue permanently
+                redisTemplate.opsForZSet().remove("emails:pending", id);
+                // Save updated status in all hash
+                redisTemplate.opsForHash().put("emails:all", id, email);
+                
                 log.error("Email {} to {} permanently failed after {} attempts",
                         email.getEmailType(), email.getRecipientEmail(), email.getAttempts(), e);
             } else {
                 email.setStatus("FAILED");
                 email.setNextAttemptAt(LocalDateTime.now().plusSeconds(retryDelaySeconds));
+                
+                // Update score in pending queue to the new nextAttemptAt
+                long newScore = email.getNextAttemptAt().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+                redisTemplate.opsForZSet().add("emails:pending", id, newScore);
+                // Save updated state in hash
+                redisTemplate.opsForHash().put("emails:all", id, email);
+                
                 log.warn("Email {} to {} failed; retry scheduled at {}",
                         email.getEmailType(), email.getRecipientEmail(), email.getNextAttemptAt(), e);
             }
         }
-
-        emailOutboxRepository.save(email);
     }
 
     private void queueCriticalUserEmail(
@@ -152,8 +182,26 @@ public class EmailService {
             String templateName,
             Map<String, Object> templateVariables
     ) {
-        emailOutboxRepository.cancelUnsentByUserAndType(user.getId(), emailType);
+        cancelUnsentByUserAndType(user.getId(), emailType);
         queueEmail(user, emailType, user.getEmail(), subject, templateName, templateVariables);
+    }
+
+    public void cancelUnsentByUserAndType(UUID userId, String emailType) {
+        if (userId == null) return;
+        String userIdStr = userId.toString();
+        
+        Set<Object> pendingIds = redisTemplate.opsForZSet().range("emails:pending", 0, -1);
+        if (pendingIds == null || pendingIds.isEmpty()) return;
+
+        for (Object idObj : pendingIds) {
+            String id = (String) idObj;
+            RedisEmailOutbox email = (RedisEmailOutbox) redisTemplate.opsForHash().get("emails:all", id);
+            if (email != null && userIdStr.equals(email.getUserId()) && emailType.equals(email.getEmailType())) {
+                redisTemplate.opsForZSet().remove("emails:pending", id);
+                email.setStatus("CANCELED");
+                redisTemplate.opsForHash().put("emails:all", id, email);
+            }
+        }
     }
 
     private void queueEmail(
@@ -164,8 +212,10 @@ public class EmailService {
             String templateName,
             Map<String, Object> templateVariables
     ) {
-        EmailOutbox email = EmailOutbox.builder()
-                .user(user)
+        String id = UUID.randomUUID().toString();
+        RedisEmailOutbox email = RedisEmailOutbox.builder()
+                .id(id)
+                .userId(user != null ? user.getId().toString() : null)
                 .emailType(emailType)
                 .recipientEmail(recipientEmail)
                 .subject(subject)
@@ -177,11 +227,15 @@ public class EmailService {
                 .nextAttemptAt(LocalDateTime.now())
                 .build();
 
-        emailOutboxRepository.save(email);
+        redisTemplate.opsForHash().put("emails:all", id, email);
+
+        long score = email.getNextAttemptAt().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        redisTemplate.opsForZSet().add("emails:pending", id, score);
+
         log.info("Queued {} email to {}", emailType, recipientEmail);
     }
 
-    private void sendEmail(EmailOutbox email) throws MessagingException, JsonProcessingException {
+    private void sendEmail(RedisEmailOutbox email) throws MessagingException, JsonProcessingException {
         Context context = new Context();
         context.setVariables(fromJson(email.getTemplateVariables()));
 

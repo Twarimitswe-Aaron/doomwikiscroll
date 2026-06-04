@@ -62,6 +62,13 @@ public class AuthController {
                 "If an account exists with this email, a password reset link has been sent"));
     }
 
+    @GetMapping("/verify-reset-token")
+    @Operation(summary = "Verify password reset token")
+    public ResponseEntity<Map<String, String>> verifyResetToken(@RequestParam String token) {
+        authenticationService.verifyResetToken(token);
+        return ResponseEntity.ok(Map.of("message", "Token is valid"));
+    }
+
     @PostMapping("/reset-password")
     @Operation(summary = "Reset password with token")
     public ResponseEntity<Map<String, String>> resetPassword(

@@ -26,6 +26,7 @@ public class EventMapper {
                 .location(event.getLocation())
                 .latitude(event.getLatitude())
                 .longitude(event.getLongitude())
+                .wikipediaPageId(event.getWikipediaPageId())
                 .wikipediaUrl(event.getWikipediaUrl())
                 .imageUrl(event.getImageUrl())
                 .thumbnailUrl(event.getThumbnailUrl())

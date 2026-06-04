@@ -23,6 +23,7 @@ public class EventDto {
     private String location;
     private Double latitude;
     private Double longitude;
+    private Long wikipediaPageId;
     private String wikipediaUrl;
     private String imageUrl;
     private String thumbnailUrl;

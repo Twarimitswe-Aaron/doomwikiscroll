@@ -23,27 +23,40 @@ public class FeedService {
 
     private final HistoricalEventRepository eventRepository;
     private final EventMapper eventMapper;
+    private final com.doomscroll.wik.service.event.WikipediaIngestionService wikipediaIngestionService;
 
     @Transactional(readOnly = true)
     public FeedResponseDto getFeed(int page, int size) {
-        double seed = ThreadLocalRandom.current().nextDouble();
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<HistoricalEvent> eventPage = eventRepository.findPublishedEventsAfterRandomKey(seed, pageRequest);
-
-        if (eventPage.isEmpty()) {
-            eventPage = eventRepository.findPublishedEventsBeforeRandomKey(seed, pageRequest);
+        
+        // 1. Get some trending/popular events from DB
+        Page<HistoricalEvent> dbEvents = eventRepository.findPublishedEventsAfterRandomKey(ThreadLocalRandom.current().nextDouble(), pageRequest);
+        if (dbEvents.isEmpty()) {
+            dbEvents = eventRepository.findPublishedEventsBeforeRandomKey(ThreadLocalRandom.current().nextDouble(), pageRequest);
         }
         
-        List<EventDto> events = eventPage.getContent().stream()
+        List<EventDto> events = dbEvents.getContent().stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toList());
+                
+        // 2. Mix in fresh Wikipedia events
+        int wikipediaNeeded = size - events.size();
+        if (wikipediaNeeded < size / 2) {
+            wikipediaNeeded = size / 2; // Always get at least some fresh Wikipedia content
+        }
+        
+        List<EventDto> freshEvents = wikipediaIngestionService.fetchRandomArticles(wikipediaNeeded);
+        events.addAll(freshEvents);
+
+        // Shuffle the combined feed
+        java.util.Collections.shuffle(events);
 
         return FeedResponseDto.builder()
                 .events(events)
-                .pageNumber(eventPage.getNumber())
-                .pageSize(eventPage.getSize())
-                .hasNext(eventPage.hasNext())
-                .totalElements(eventPage.getTotalElements())
+                .pageNumber(page)
+                .pageSize(events.size())
+                .hasNext(true) // Infinite scroll
+                .totalElements(1000000L) // arbitrary large number for infinite scroll
                 .build();
     }
 }

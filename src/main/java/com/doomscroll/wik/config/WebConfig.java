@@ -12,8 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins(
                         "http://localhost:3000",  // React
+                        "http://localhost:4000",  // SvelteKit Frontend
                         "http://localhost:4200",  // Angular
-                        "http://localhost:5173"   // Vite/Vue
+                        "http://localhost:5173"   // Vite/Svelte default
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

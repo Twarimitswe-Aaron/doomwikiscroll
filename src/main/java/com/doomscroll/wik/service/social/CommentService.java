@@ -25,14 +25,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final HistoricalEventRepository eventRepository;
+    private final com.doomscroll.wik.service.event.WikipediaIngestionService wikipediaIngestionService;
 
     @Transactional
     public CommentDto createComment(UUID userId, CommentRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        HistoricalEvent event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+        HistoricalEvent event = wikipediaIngestionService.ensureEventPersisted(request.getEventId());
 
         Comment parentComment = null;
         if (request.getParentCommentId() != null) {

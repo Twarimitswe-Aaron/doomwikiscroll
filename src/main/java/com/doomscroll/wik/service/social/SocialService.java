@@ -22,11 +22,11 @@ public class SocialService {
     private final UserFollowRepository userFollowRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final com.doomscroll.wik.service.event.WikipediaIngestionService wikipediaIngestionService;
 
     @Transactional
     public void recordInteraction(UUID userId, InteractionRequest request) {
-        HistoricalEvent event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+        HistoricalEvent event = wikipediaIngestionService.ensureEventPersisted(request.getEventId());
 
         String type = request.getInteractionType().toUpperCase();
 
@@ -86,8 +86,7 @@ public class SocialService {
     public boolean toggleBookmark(UUID userId, UUID eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        HistoricalEvent event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+        HistoricalEvent event = wikipediaIngestionService.ensureEventPersisted(eventId);
 
         Optional<Bookmark> bookmarkOpt = bookmarkRepository.findByUserIdAndEventId(userId, eventId);
         if (bookmarkOpt.isPresent()) {

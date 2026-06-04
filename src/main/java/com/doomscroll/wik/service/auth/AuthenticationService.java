@@ -68,13 +68,7 @@ public class AuthenticationService {
         String verificationLink = baseUrl + "/verify-email?token=" + verificationToken.getToken();
         emailService.queueVerificationEmail(user, verificationLink);
 
-        // Generate tokens
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
         return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .userId(user.getId())
                 .username(user.getDisplayUsername())
                 .email(user.getEmail())
@@ -105,9 +99,13 @@ public class AuthenticationService {
 
     @Transactional
     public void forgotPassword(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("No account found with this email"));
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            log.info("Password reset requested for non-existent email: {}", email);
+            return;
+        }
 
+        User user = optionalUser.get();
         VerificationToken token = verificationTokenService.createPasswordResetToken(user);
 
         String resetLink = baseUrl + "/reset-password?token=" + token.getToken();
@@ -118,11 +116,16 @@ public class AuthenticationService {
 
     @Transactional
     public void resendVerificationEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("No account found with this email"));
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            log.info("Resend verification requested for non-existent email: {}", email);
+            return;
+        }
 
+        User user = optionalUser.get();
         if (Boolean.TRUE.equals(user.getEmailVerified())) {
-            throw new RuntimeException("Email is already verified");
+            log.info("Resend verification requested for already verified email: {}", email);
+            return;
         }
 
         VerificationToken verificationToken = verificationTokenService.createEmailVerificationToken(user);
@@ -130,6 +133,16 @@ public class AuthenticationService {
         emailService.queueVerificationEmail(user, verificationLink);
 
         log.info("Verification email re-queued for user: {}", user.getEmail());
+    }
+
+    @Transactional(readOnly = true)
+    public void verifyResetToken(String token) {
+        Optional<VerificationToken> verificationToken =
+                verificationTokenService.validateToken(token, "PASSWORD_RESET");
+
+        if (verificationToken.isEmpty()) {
+            throw new RuntimeException("Invalid or expired reset token");
+        }
     }
 
     @Transactional
@@ -165,6 +178,10 @@ public class AuthenticationService {
 
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw new RuntimeException("Account is not active. Please contact support.");
+        }
+
+        if (!Boolean.TRUE.equals(user.getEmailVerified())) {
+            throw new RuntimeException("Email address is not verified. Please check your inbox or request a new verification email.");
         }
 
         // Authenticate

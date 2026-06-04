@@ -54,6 +54,7 @@ public class SecurityConfig {
                                 "/api/v1/categories/**",
                                 "/api/v1/events",
                                 "/api/v1/events/**",
+                                "/api/v1/feed",
                                 "/api/v1/comments/event/**",
                                 "/api/v1/comments/*/replies"
                         ).permitAll()

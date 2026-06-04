@@ -1,7 +1,6 @@
 package com.doomscroll.wik.repository;
 
 import com.doomscroll.wik.entity.EmailOutbox;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,14 +14,30 @@ import java.util.UUID;
 @Repository
 public interface EmailOutboxRepository extends JpaRepository<EmailOutbox, UUID> {
 
+    @Query(value = """
+            UPDATE email_outbox
+            SET status = 'SENDING', attempts = attempts + 1
+            WHERE id IN (
+                SELECT id FROM email_outbox
+                WHERE status IN ('PENDING', 'FAILED')
+                  AND next_attempt_at <= :now
+                  AND attempts < max_attempts
+                ORDER BY next_attempt_at ASC, created_at ASC
+                LIMIT :limit
+                FOR UPDATE SKIP LOCKED
+            )
+            RETURNING *
+            """, nativeQuery = true)
+    List<EmailOutbox> claimEmails(@Param("now") LocalDateTime now, @Param("limit") int limit);
+
+    @Modifying
     @Query("""
-            SELECT e FROM EmailOutbox e
-            WHERE e.status IN ('PENDING', 'FAILED')
-              AND e.nextAttemptAt <= :now
-              AND e.attempts < e.maxAttempts
-            ORDER BY e.nextAttemptAt ASC, e.createdAt ASC
+            UPDATE EmailOutbox e
+            SET e.status = 'FAILED', e.lastError = 'Stuck in SENDING state'
+            WHERE e.status = 'SENDING'
+              AND e.updatedAt <= :stuckThreshold
             """)
-    List<EmailOutbox> findDueEmails(@Param("now") LocalDateTime now, Pageable pageable);
+    int recoverStuckEmails(@Param("stuckThreshold") LocalDateTime stuckThreshold);
 
     @Modifying
     @Query("""

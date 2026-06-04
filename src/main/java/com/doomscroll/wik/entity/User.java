@@ -27,7 +27,7 @@ import java.util.Set;
 @Builder
 public class User extends BaseEntity implements UserDetails {
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(length = 50)
     private String username;
 
     @Column(unique = true, nullable = false, length = 255)
