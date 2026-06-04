@@ -29,10 +29,10 @@ public class FeedService {
     public FeedResponseDto getFeed(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         
-        // 1. Get some trending/popular events from DB
-        Page<HistoricalEvent> dbEvents = eventRepository.findPublishedEventsAfterRandomKey(ThreadLocalRandom.current().nextDouble(), pageRequest);
+        double seed = ThreadLocalRandom.current().nextDouble();
+        Page<HistoricalEvent> dbEvents = eventRepository.findPublishedEventsAfterRandomKey(seed, pageRequest);
         if (dbEvents.isEmpty()) {
-            dbEvents = eventRepository.findPublishedEventsBeforeRandomKey(ThreadLocalRandom.current().nextDouble(), pageRequest);
+            dbEvents = eventRepository.findPublishedEventsBeforeRandomKey(seed, pageRequest);
         }
         
         List<EventDto> events = dbEvents.getContent().stream()

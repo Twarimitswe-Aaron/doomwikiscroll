@@ -83,7 +83,7 @@ class EmailServiceTest {
         when(redisTemplate.opsForHash()).thenReturn(hashOperations);
 
         String id = UUID.randomUUID().toString();
-        when(zSetOperations.rangeByScore(eq("emails:pending"), eq(0.0), anyDouble(), eq(0), anyInt()))
+        when(zSetOperations.rangeByScore(eq("emails:pending"), anyDouble(), anyDouble(), anyLong(), anyLong()))
                 .thenReturn(Set.of(id));
 
         RedisEmailOutbox email = RedisEmailOutbox.builder()

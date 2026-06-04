@@ -91,14 +91,14 @@ class AuthenticationServiceTest {
                 .build();
         when(verificationTokenService.createEmailVerificationToken(any(User.class))).thenReturn(vt);
 
-        when(jwtService.generateAccessToken(any(User.class))).thenReturn("accessToken");
-        when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refreshToken");
-
         AuthenticationResponse response = authenticationService.register(registerRequest);
 
         assertNotNull(response);
-        assertEquals("accessToken", response.getAccessToken());
-        assertEquals("refreshToken", response.getRefreshToken());
+        assertNull(response.getAccessToken());
+        assertNull(response.getRefreshToken());
+        assertEquals(user.getId(), response.getUserId());
+        assertEquals(user.getDisplayUsername(), response.getUsername());
+        assertEquals(user.getEmail(), response.getEmail());
         verify(userRepository).save(any(User.class));
     }
 
@@ -114,6 +114,7 @@ class AuthenticationServiceTest {
 
     @Test
     void login_Success() {
+        user.setEmailVerified(true);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(jwtService.generateAccessToken(any(User.class))).thenReturn("accessToken");
         when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refreshToken");
