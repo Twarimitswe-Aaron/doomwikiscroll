@@ -1,8 +1,10 @@
 package com.doomscroll.wik.controller.v1;
 
+import com.doomscroll.wik.dto.TodayStoryDto;
 import com.doomscroll.wik.dto.response.FeedResponseDto;
 import com.doomscroll.wik.dto.request.InteractionRequest;
 import com.doomscroll.wik.entity.User;
+import com.doomscroll.wik.service.event.TodayInHistoryService;
 import com.doomscroll.wik.service.social.FeedService;
 import com.doomscroll.wik.service.social.SocialService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +26,7 @@ public class FeedController {
 
     private final FeedService feedService;
     private final SocialService socialService;
+    private final TodayInHistoryService todayInHistoryService;
 
     @GetMapping
     @Operation(summary = "Get historical events feed")
@@ -30,6 +34,12 @@ public class FeedController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(feedService.getFeed(page, size));
+    }
+
+    @GetMapping("/today")
+    @Operation(summary = "Get today-in-history story items for the stories bar")
+    public ResponseEntity<List<TodayStoryDto>> getTodayStories() {
+        return ResponseEntity.ok(todayInHistoryService.getTodayStories());
     }
 
     @PostMapping("/interact")
@@ -41,3 +51,4 @@ public class FeedController {
         return ResponseEntity.ok(Map.of("message", "Interaction recorded"));
     }
 }
+

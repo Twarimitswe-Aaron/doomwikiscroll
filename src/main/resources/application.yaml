@@ -45,9 +45,9 @@ spring:
           max-idle: 8
           min-idle: 0
 
-  # Email Configuration
+  # Email Configuration (Brevo SMTP relay)
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
+    host: ${MAIL_HOST:smtp-relay.brevo.com}
     port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
@@ -137,7 +137,7 @@ app:
     password-reset-token-expiration-minutes: 60
   email:
     outbox:
-      poll-interval-ms: 60000
+      poll-interval-ms: 30000   # Poll Redis queue every 30 seconds
       retry-delay-seconds: 60
       batch-size: 25
   feed:
