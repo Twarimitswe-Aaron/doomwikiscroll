@@ -39,95 +39,98 @@ public class WikipediaIngestionService {
     @Value("${wikipedia.api.user-agent:WikHistoryFeed/1.0}")
     private String userAgent;
 
+    /**
+     * Fetches random Wikipedia articles, strongly preferring those that have a thumbnail image.
+     * Loops up to MAX_ROUNDS API calls (each returning up to 50 articles) until we have
+     * collected `limit` image-bearing articles. Text-only articles are used only as a last-resort
+     * safety fallback so the feed always returns something.
+     */
     public List<EventDto> fetchRandomArticles(int limit) {
         log.info("fetchRandomArticles called with limit={}", limit);
-        List<EventDto> events = new ArrayList<>();
-        try {
-            // Fetch 2x the requested limit so we can prefer articles with thumbnails
-            int fetchLimit = Math.min(limit * 2, 50);
-            java.net.URI uri = UriComponentsBuilder.fromHttpUrl(wikipediaApiUrl)
-                    .queryParam("action", "query")
-                    .queryParam("generator", "random")
-                    .queryParam("grnnamespace", "0")
-                    .queryParam("grnlimit", fetchLimit)
-                    .queryParam("prop", "extracts|pageimages")
-                    .queryParam("exintro", "1")
-                    .queryParam("explaintext", "1")
-                    .queryParam("exsentences", "3")
-                    .queryParam("pithumbsize", "500")
-                    .queryParam("format", "json")
-                    .build()
-                    .toUri();
 
-            log.info("Fetching articles from Wikipedia API URL: {}", uri);
+        final int MAX_ROUNDS = 5;
+        List<EventDto> withImage    = new ArrayList<>();
+        List<EventDto> withoutImage = new ArrayList<>();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("User-Agent", userAgent);
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", userAgent);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    entity,
-                    JsonNode.class
-            );
+        for (int round = 0; round < MAX_ROUNDS && withImage.size() < limit; round++) {
+            try {
+                java.net.URI uri = UriComponentsBuilder.fromHttpUrl(wikipediaApiUrl)
+                        .queryParam("action", "query")
+                        .queryParam("generator", "random")
+                        .queryParam("grnnamespace", "0")
+                        .queryParam("grnlimit", 50)          // max allowed by Wikipedia API
+                        .queryParam("prop", "extracts|pageimages")
+                        .queryParam("exintro", "1")
+                        .queryParam("explaintext", "1")
+                        .queryParam("exsentences", "3")
+                        .queryParam("pithumbsize", "600")
+                        .queryParam("format", "json")
+                        .build()
+                        .toUri();
 
-            log.info("Wikipedia API response status code: {}", responseEntity.getStatusCode());
-            JsonNode response = responseEntity.getBody();
-            log.debug("Wikipedia API response body: {}", response);
+                log.info("Round {} – fetching from Wikipedia: {}", round + 1, uri);
 
-            if (response != null && response.has("query") && response.get("query").has("pages")) {
-                JsonNode pages = response.get("query").get("pages");
-                log.info("Found {} pages in Wikipedia response", pages.size());
+                ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(
+                        uri, HttpMethod.GET, entity, JsonNode.class);
 
-                List<EventDto> withImage = new ArrayList<>();
-                List<EventDto> withoutImage = new ArrayList<>();
+                JsonNode response = responseEntity.getBody();
 
-                pages.fields().forEachRemaining(entry -> {
-                    JsonNode page = entry.getValue();
-                    try {
-                        EventDto event = mapToEventDto(page);
-                        if (event != null) {
-                            event.setId(UUID.randomUUID());
-                            if (event.getThumbnailUrl() != null) {
-                                withImage.add(event);
-                            } else {
-                                withoutImage.add(event);
+                if (response != null && response.has("query") && response.get("query").has("pages")) {
+                    JsonNode pages = response.get("query").get("pages");
+                    log.info("Round {} – got {} pages", round + 1, pages.size());
+
+                    pages.fields().forEachRemaining(entry -> {
+                        JsonNode page = entry.getValue();
+                        try {
+                            EventDto event = mapToEventDto(page);
+                            if (event != null) {
+                                event.setId(UUID.randomUUID());
+                                if (event.getThumbnailUrl() != null) {
+                                    withImage.add(event);
+                                } else {
+                                    withoutImage.add(event);
+                                }
                             }
-                            log.info("Mapped Wikipedia article: {} (hasImage={})", event.getTitle(), event.getThumbnailUrl() != null);
-                        } else {
-                            log.warn("Skipped page ID: {} (null mapped EventDto)", entry.getKey());
+                        } catch (Exception e) {
+                            log.warn("Failed to map page {}", entry.getKey(), e);
                         }
-                    } catch (Exception e) {
-                        log.warn("Failed to map Wikipedia page ID: {}", entry.getKey(), e);
-                    }
-                });
+                    });
 
-                // Prioritise image-bearing articles; fill remaining slots with text-only
-                List<EventDto> selected = new ArrayList<>();
-                selected.addAll(withImage);
-                if (selected.size() < limit) {
-                    int remaining = limit - selected.size();
-                    selected.addAll(withoutImage.subList(0, Math.min(remaining, withoutImage.size())));
-                }
-                if (selected.size() > limit) {
-                    selected = selected.subList(0, limit);
+                    log.info("Round {} complete – {} with image, {} without (need {})",
+                            round + 1, withImage.size(), withoutImage.size(), limit);
+                } else {
+                    log.warn("Round {} – Wikipedia response missing query.pages", round + 1);
                 }
 
-                // Cache all selected events in Redis
-                for (EventDto event : selected) {
-                    redisTemplate.opsForValue().set("temp_event:" + event.getId(), event, 24, TimeUnit.HOURS);
-                }
-                events.addAll(selected);
-
-            } else {
-                log.warn("Wikipedia response did not contain query.pages: {}", response);
+            } catch (Exception e) {
+                log.error("Round {} – failed to fetch from Wikipedia", round + 1, e);
             }
-        } catch (Exception e) {
-            log.error("Failed to fetch articles from Wikipedia", e);
         }
-        log.info("Returning {} events from fetchRandomArticles ({} requested)", events.size(), limit);
-        return events;
+
+        // Build final list: image-bearing articles first, text-only as last resort
+        List<EventDto> selected = new ArrayList<>(withImage);
+        if (selected.size() < limit) {
+            int remaining = limit - selected.size();
+            selected.addAll(withoutImage.subList(0, Math.min(remaining, withoutImage.size())));
+            log.warn("Only {} image articles found after {} rounds – padded with {} text-only",
+                    withImage.size(), MAX_ROUNDS, selected.size() - withImage.size());
+        }
+        if (selected.size() > limit) {
+            selected = selected.subList(0, limit);
+        }
+
+        // Cache selected events in Redis
+        for (EventDto event : selected) {
+            redisTemplate.opsForValue().set("temp_event:" + event.getId(), event, 24, TimeUnit.HOURS);
+        }
+
+        log.info("Returning {}/{} events (all with images: {})",
+                selected.size(), limit, selected.size() <= withImage.size());
+        return selected;
     }
 
     private EventDto mapToEventDto(JsonNode page) {
