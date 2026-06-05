@@ -38,8 +38,9 @@ public class FeedController {
 
     @GetMapping("/today")
     @Operation(summary = "Get today-in-history story items for the stories bar")
-    public ResponseEntity<List<TodayStoryDto>> getTodayStories() {
-        return ResponseEntity.ok(todayInHistoryService.getTodayStories());
+    public ResponseEntity<List<TodayStoryDto>> getTodayStories(
+            @RequestParam(defaultValue = "false") boolean refresh) {
+        return ResponseEntity.ok(todayInHistoryService.getTodayStories(refresh));
     }
 
     @PostMapping("/interact")

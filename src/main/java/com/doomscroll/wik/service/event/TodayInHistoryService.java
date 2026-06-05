@@ -41,15 +41,24 @@ public class TodayInHistoryService {
     private static final int MAX_STORIES       = 8;
     private static final String CACHE_KEY_PREFIX = "today_stories_v2:";
 
-    @SuppressWarnings("unchecked")
     public List<TodayStoryDto> getTodayStories() {
+        return getTodayStories(false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<TodayStoryDto> getTodayStories(boolean refresh) {
         LocalDate today = LocalDate.now();
         String cacheKey = CACHE_KEY_PREFIX + today;
 
-        Object cached = redisTemplate.opsForValue().get(cacheKey);
-        if (cached instanceof List) {
-            log.debug("Returning cached today stories for {}", today);
-            return (List<TodayStoryDto>) cached;
+        if (refresh) {
+            redisTemplate.delete(cacheKey);
+            log.info("Busting Redis cache for today stories on user request");
+        } else {
+            Object cached = redisTemplate.opsForValue().get(cacheKey);
+            if (cached instanceof List) {
+                log.debug("Returning cached today stories for {}", today);
+                return (List<TodayStoryDto>) cached;
+            }
         }
 
         List<TodayStoryDto> stories = buildStories(today);
