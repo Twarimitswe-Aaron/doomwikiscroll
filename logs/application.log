@@ -1788,3 +1788,180 @@ Caused by: java.net.UnknownHostException: en.wikipedia.org
 2026-06-06 01:52:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
 2026-06-06 01:53:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
 2026-06-06 01:53:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:54:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:54:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:55:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:55:34 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 01:55:34 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:55:37 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 01:55:37 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 8 with image, 12 without (need 10)
+2026-06-06 01:55:37 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:55:39 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 01:55:39 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 13 with image, 27 without (need 10)
+2026-06-06 01:55:39 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 01:55:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:56:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:56:30 [http-nio-8080-exec-4] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 01:56:30 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 01:56:30 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:56:31 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 01:56:31 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 8 with image, 12 without (need 10)
+2026-06-06 01:56:31 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:56:32 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 01:56:32 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 12 with image, 28 without (need 10)
+2026-06-06 01:56:32 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 01:56:33 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 01:56:33 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:56:35 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 01:56:35 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 7 with image, 13 without (need 10)
+2026-06-06 01:56:35 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:56:37 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 01:56:37 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 18 with image, 22 without (need 10)
+2026-06-06 01:56:37 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 01:56:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:56:59 [http-nio-8080-exec-8] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 01:56:59 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 01:56:59 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:57:01 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 01:57:01 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 5 with image, 15 without (need 10)
+2026-06-06 01:57:01 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:57:03 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 01:57:03 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 9 with image, 31 without (need 10)
+2026-06-06 01:57:03 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 3 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:57:04 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 3 – got 50 pages
+2026-06-06 01:57:04 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 3 complete – 16 with image, 44 without (need 10)
+2026-06-06 01:57:04 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 01:57:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:57:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:58:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:58:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:58:57 [http-nio-8080-exec-10] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 01:58:57 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 01:58:57 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:58:59 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 01:58:59 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 5 with image, 15 without (need 10)
+2026-06-06 01:58:59 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:59:00 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 01:59:00 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 11 with image, 29 without (need 10)
+2026-06-06 01:59:00 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 01:59:01 [http-nio-8080-exec-2] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 01:59:01 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 01:59:01 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:59:02 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 01:59:02 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 4 with image, 16 without (need 10)
+2026-06-06 01:59:02 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 01:59:05 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 01:59:05 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 10 with image, 30 without (need 10)
+2026-06-06 01:59:05 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 01:59:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 01:59:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:00:00 [scheduling-1] INFO  c.d.wik.config.ScheduledTasks - Running scheduled cleanup of expired tokens
+2026-06-06 02:00:00 [scheduling-1] INFO  c.d.wik.config.ScheduledTasks - Completed cleanup of expired tokens
+2026-06-06 02:00:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:00:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:01:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:01:41 [http-nio-8080-exec-4] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:01:41 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:01:41 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:01:42 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:01:42 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 8 with image, 12 without (need 10)
+2026-06-06 02:01:42 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:01:43 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 02:01:43 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 18 with image, 22 without (need 10)
+2026-06-06 02:01:43 [http-nio-8080-exec-5] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:01:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:02:21 [http-nio-8080-exec-6] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:02:21 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:02:21 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:02:23 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:02:23 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 9 with image, 11 without (need 10)
+2026-06-06 02:02:23 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:02:24 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 02:02:24 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 17 with image, 23 without (need 10)
+2026-06-06 02:02:24 [http-nio-8080-exec-7] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:02:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:02:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:03:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:03:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:04:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:04:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:05:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:05:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:06:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:06:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:07:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:07:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:08:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:08:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:09:01 [http-nio-8080-exec-8] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:09:01 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:09:01 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:09:03 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:09:03 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 10 with image, 10 without (need 10)
+2026-06-06 02:09:03 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:09:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:09:54 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:10:11 [http-nio-8080-exec-10] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:10:11 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:10:11 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:10:17 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:10:17 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 8 with image, 12 without (need 10)
+2026-06-06 02:10:17 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:10:18 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 02:10:18 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 18 with image, 22 without (need 10)
+2026-06-06 02:10:18 [http-nio-8080-exec-1] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:10:24 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:10:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:11:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:11:28 [http-nio-8080-exec-2] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:11:28 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:11:28 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:11:30 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:11:30 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 6 with image, 14 without (need 10)
+2026-06-06 02:11:30 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:11:31 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 02:11:31 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 14 with image, 26 without (need 10)
+2026-06-06 02:11:31 [http-nio-8080-exec-3] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:11:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:12:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:12:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:13:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:13:53 [http-nio-8080-exec-4] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:13:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:14:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:14:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:15:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:15:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:16:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:16:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:17:04 [http-nio-8080-exec-5] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:17:04 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:17:04 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:17:06 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:17:06 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 8 with image, 12 without (need 10)
+2026-06-06 02:17:06 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:17:08 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 02:17:08 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 15 with image, 25 without (need 10)
+2026-06-06 02:17:08 [http-nio-8080-exec-6] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:17:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:17:29 [http-nio-8080-exec-7] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:17:46 [http-nio-8080-exec-8] DEBUG c.d.w.s.event.TodayInHistoryService - Returning cached today stories for 2026-06-06
+2026-06-06 02:17:46 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - fetchRandomArticles called with limit=10
+2026-06-06 02:17:46 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:17:54 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 – got 50 pages
+2026-06-06 02:17:54 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 1 complete – 8 with image, 12 without (need 10)
+2026-06-06 02:17:54 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – fetching from Wikipedia: https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&grnlimit=50&prop=extracts%7Cpageimages&exintro=1&explaintext=1&exsentences=3&pithumbsize=600&format=json
+2026-06-06 02:17:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:17:55 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 – got 50 pages
+2026-06-06 02:17:55 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Round 2 complete – 14 with image, 26 without (need 10)
+2026-06-06 02:17:55 [http-nio-8080-exec-9] INFO  c.d.w.s.e.WikipediaIngestionService - Returning 10/10 events (all with images: true)
+2026-06-06 02:18:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:18:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:19:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:19:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:20:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:20:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:21:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:21:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:22:25 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox
+2026-06-06 02:22:55 [scheduling-1] DEBUG c.d.wik.config.ScheduledTasks - Processing email outbox

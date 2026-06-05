@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -78,6 +77,7 @@ class EmailServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void processDueEmails_Success() throws Exception {
         when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
         when(redisTemplate.opsForHash()).thenReturn(hashOperations);
