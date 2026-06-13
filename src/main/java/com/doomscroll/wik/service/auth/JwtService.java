@@ -4,6 +4,7 @@ import com.doomscroll.wik.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,16 @@ public class JwtService {
 
     @Value("${jwt.refresh-token.expiration}")
     private long refreshExpiration;
+
+    @PostConstruct
+    void validateSecretKey() {
+        if (secretKey == null || secretKey.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException(
+                "jwt.secret must be at least 32 characters (256 bits). " +
+                "Please update your application properties."
+            );
+        }
+    }
 
     public String generateAccessToken(User user) {
         return generateToken(new HashMap<>(), user, jwtExpiration);
