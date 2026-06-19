@@ -62,6 +62,9 @@ class AuthControllerIntegrationTest {
     @MockBean
     private org.springframework.mail.javamail.JavaMailSender javaMailSender;
 
+    @MockBean
+    private com.doomscroll.wik.service.auth.EmailService emailService;
+
     @BeforeEach
     void setUp() {
         // Delete child FK rows first, then parent to satisfy referential integrity.

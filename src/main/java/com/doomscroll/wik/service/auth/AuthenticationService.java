@@ -173,15 +173,15 @@ public class AuthenticationService {
 
         // Check account status
         if (user.getAccountLocked()) {
-            throw new RuntimeException("Account is locked. Please try again later or reset your password.");
+            throw new org.springframework.security.authentication.LockedException("Account is locked. Please try again later or reset your password.");
         }
 
         if (user.getStatus() != UserStatus.ACTIVE) {
-            throw new RuntimeException("Account is not active. Please contact support.");
+            throw new org.springframework.security.authentication.DisabledException("Account is not active. Please contact support.");
         }
 
         if (!Boolean.TRUE.equals(user.getEmailVerified())) {
-            throw new RuntimeException("Email address is not verified. Please check your inbox or request a new verification email.");
+            throw new org.springframework.security.authentication.DisabledException("Email address is not verified. Please check your inbox or request a new verification email.");
         }
 
         // Authenticate

@@ -34,13 +34,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(
-            BadCredentialsException ex) {
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthenticationException(
+            org.springframework.security.core.AuthenticationException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.UNAUTHORIZED.value());
-        response.put("message", "Invalid email or password");
+        
+        if (ex instanceof BadCredentialsException) {
+            response.put("message", "Invalid email or password");
+        } else {
+            response.put("message", ex.getMessage());
+        }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
